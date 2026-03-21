@@ -1,6 +1,5 @@
 package com.ordermanagement.orderservice.controller;
 
-import com.ordermanagement.orderservice.Models.Entity.Order;
 import com.ordermanagement.orderservice.Models.dto.request.SaveOrderRequest;
 import com.ordermanagement.orderservice.Models.dto.response.GetOrderResponse;
 import com.ordermanagement.orderservice.Models.dto.response.SavedOrderResponse;
@@ -26,8 +25,8 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
-    @GetMapping
-    public ResponseEntity<GetOrderResponse> getAnOrder(@RequestParam String id) throws OrderNotFoundException {
+    @GetMapping("/{id}")
+    public ResponseEntity<GetOrderResponse> getAnOrder(@PathVariable String id) throws OrderNotFoundException {
         GetOrderResponse order = service.getOrder(id);
         return new ResponseEntity<>(order, HttpStatus.FOUND);
     }

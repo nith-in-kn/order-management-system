@@ -1,13 +1,14 @@
 package com.ordermanagement.orderservice.Models.dto.request;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
+@Data
 public class OrderItemRequest {
 
     @NotBlank(message = "Product ID is required")

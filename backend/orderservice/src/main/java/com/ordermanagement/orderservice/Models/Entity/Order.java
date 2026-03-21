@@ -2,16 +2,16 @@ package com.ordermanagement.orderservice.Models.Entity;
 
 import com.ordermanagement.orderservice.shared.enums.OrderStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity @Table(name = "orders") @Data
-@AllArgsConstructor @NoArgsConstructor
+@NoArgsConstructor
 public class Order {
 
     @Id @GeneratedValue(strategy = GenerationType.UUID)
@@ -40,7 +40,7 @@ public class Order {
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
-    private List<OrderItem> items;
+    private List<OrderItem> items = new ArrayList<>();
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -56,6 +56,7 @@ public class Order {
     public void onCreate(){
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
+        this.orderStatus = OrderStatus.PENDING;
     }
 
     @PreUpdate
