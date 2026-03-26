@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Slf4j
-@RestController @RequestMapping("order")
+@RestController @RequestMapping("/api/orders")
 @AllArgsConstructor
 public class OrderController {
 
@@ -24,19 +24,24 @@ public class OrderController {
 
     @GetMapping
     public ResponseEntity<List<GetOrderResponse>> getAll() throws OrderNotFoundException {
+        log.info("GET /api/orders - fetching all orders");
         List<GetOrderResponse> orders = service.getAllOrder();
         return ResponseEntity.ok(orders);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<GetOrderResponse> getAnOrder(@PathVariable String id) throws OrderNotFoundException {
+        log.info("GET /api/orders/{} - fetching all orders", id);
         GetOrderResponse order = service.getOrder(id);
         return new ResponseEntity<>(order, HttpStatus.FOUND);
     }
 
     @PostMapping
     public ResponseEntity<SavedOrderResponse> saveOrder(@Valid @RequestBody SaveOrderRequest requestBody){
-        SavedOrderResponse order = service.saveOrder(requestBody);
+        log.info("POST /api/orders - creating order for customer: {}",
+                requestBody.getCustomerId());
+        SavedOrderResponse order = service.saveOrder(requestBody);log.info("POST /api/orders - creating order for customer: {}",
+                requestBody.getCustomerId());
         return new ResponseEntity<>(order, HttpStatus.CREATED);
     }
 }

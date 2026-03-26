@@ -4,6 +4,7 @@
 - Built to demonstrate: Next.js micro-frontends, Spring Boot microservices, Kafka event streaming, Docker, Kubernetes, and CI/CD — all on a zero-cost infrastructure stack.
 
 ## Intro into folder structure
+```
 order-management-system/
 ├── .github/
 │   └── workflows/          ← CI/CD 
@@ -20,6 +21,7 @@ order-management-system/
 ├── k8s/                    ← Kubernetes YAMLs
 ├── docker-compose.yml      ← wires everything
 └── README.md               ← architecture doc
+```
 
 ## Rendering platforms
 | Platform | Projects to create |

@@ -3,6 +3,7 @@ package com.ordermanagement.orderservice.exceptions;
 import com.ordermanagement.orderservice.Models.dto.response.ErrorResponse;
 import com.ordermanagement.orderservice.exceptions.custom.OrderNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -31,13 +33,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> allOtherException(
             Exception exception, HttpServletRequest request
     ){
-
+        log.debug("Exception occured:{}",exception.getStackTrace());
         ErrorResponse responseBody = new ErrorResponse(
-                HttpStatus.EXPECTATION_FAILED.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 exception.getMessage(),
                 request.getRequestURI(),
                 LocalDateTime.now()
         );
-        return new ResponseEntity<>(responseBody, HttpStatus.EXPECTATION_FAILED);
+        return new ResponseEntity<>(responseBody, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

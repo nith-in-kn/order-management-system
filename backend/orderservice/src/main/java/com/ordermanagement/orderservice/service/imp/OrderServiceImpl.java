@@ -48,13 +48,12 @@ public class OrderServiceImpl implements OrderService {
 
         Order newOrder = orderMapper.saveRequestToEntity(request);
 
-//        newOrder.setCustomerId(request.getCustomerId());
-//        newOrder.setCustomerName(request.getCustomerName());
-//        newOrder.setDeliveryAddress(request.getDeliveryAddress());
-
-//        request.getItems().stream()
-//                .map(this::buildOrderItem)
-//                .forEach(newOrder::addItem);
+        // Calculate subTotal for each item
+        for (OrderItem item : newOrder.getItems()) {
+            item.setSubTotal(
+                item.getUnitPrice().multiply(BigDecimal.valueOf(item.getQuantity()))
+            );
+        }
 
         BigDecimal total = newOrder.getItems().stream()
                 .map(OrderItem::getSubTotal)
@@ -62,14 +61,5 @@ public class OrderServiceImpl implements OrderService {
         newOrder.setTotalAmount(total);
 
         return orderMapper.toSavedResponse(repository.save(newOrder));
-    }
-
-    private OrderItem buildOrderItem(OrderItemRequest request) {
-        OrderItem item = orderItemMapper.toItemEntity(request);
-        item.setSubTotal(
-                request.getUnitPrice()
-                        .multiply(BigDecimal.valueOf(request.getQuantity()))
-        );
-        return item;
     }
 }
