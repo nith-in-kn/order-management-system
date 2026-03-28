@@ -52,7 +52,7 @@ public class OrderController {
             Exception exception,
             HttpServletRequest request
     ){
-        log.debug("Exception occurred with message:{}, for uri:{}", exception.getMessage(), request.getRequestURL());
+        log.error("Exception occurred for uri: {} | Message: {}", request.getRequestURL(), exception.getMessage(), exception);
         return ResponseEntity.internalServerError().build();
     }
 }

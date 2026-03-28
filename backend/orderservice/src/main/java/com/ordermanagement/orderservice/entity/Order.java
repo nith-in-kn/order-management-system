@@ -1,13 +1,16 @@
 package com.ordermanagement.orderservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@ToString(exclude = "items")
 @Entity @Table(name = "orders")
 public class Order {
 
@@ -22,8 +25,10 @@ public class Order {
     @OneToMany(
         mappedBy = "order",
         cascade = CascadeType.ALL,
-        orphanRemoval = true
+        orphanRemoval = true,
+        fetch = FetchType.EAGER
     )
+    @JsonManagedReference
     private List<OrderItem> items = new ArrayList<>();
 
     public void setItems(List<OrderItem> items){

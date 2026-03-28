@@ -1,12 +1,15 @@
 package com.ordermanagement.orderservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
 @Data
+@ToString(exclude = "order")
 @Entity @Table(name = "order_items")
 public class OrderItem {
 
@@ -25,7 +28,7 @@ public class OrderItem {
     private BigDecimal subTotal;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
+    @JsonBackReference
     private Order order;
 
 
