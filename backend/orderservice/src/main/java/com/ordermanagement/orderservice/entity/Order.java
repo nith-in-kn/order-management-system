@@ -30,12 +30,15 @@ public class Order {
         orphanRemoval = true,
         fetch = FetchType.EAGER
     )
-    @JsonManagedReference
     private List<OrderItem> items = new ArrayList<>();
 
+    @JsonIgnore
     private BigDecimal totalAmount;
 
+    @JsonIgnore
     private LocalDateTime createdAt;
+
+    @JsonIgnore
     private LocalDateTime updatedAt;
 
     public void recalculateTotal() {

@@ -28,7 +28,7 @@ public class OrderItem {
     private BigDecimal subTotal;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIgnore
     private Order order;
 
 
