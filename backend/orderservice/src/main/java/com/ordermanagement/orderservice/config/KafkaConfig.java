@@ -2,7 +2,6 @@ package com.ordermanagement.orderservice.config;
 
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
-import com.ordermanagement.orderservice.entity.Order;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,8 +50,6 @@ public class KafkaConfig {
         props.put(ProducerConfig.ACKS_CONFIG, "all");
         props.put(ProducerConfig.RETRIES_CONFIG, 3);
 
-        DefaultKafkaProducerFactory<K, V> factory = new DefaultKafkaProducerFactory<>(props);
-
-        return factory;
+        return new DefaultKafkaProducerFactory<>(props);
     }
 }

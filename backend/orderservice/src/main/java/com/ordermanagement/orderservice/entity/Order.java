@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +20,9 @@ public class Order {
     @JsonIgnore
     private int id;
 
-    private int customer_id;
+    private int customerId;
 
-    private int payment_id;
+    private int paymentId;
 
     @OneToMany(
         mappedBy = "order",
@@ -31,14 +33,37 @@ public class Order {
     @JsonManagedReference
     private List<OrderItem> items = new ArrayList<>();
 
+    private BigDecimal totalAmount;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    public void recalculateTotal() {
+        this.totalAmount = items.stream()
+                .map(OrderItem::getSubTotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     public void setItems(List<OrderItem> items){
         this.items.addAll(items);
-        items.stream().forEach(i -> i.setOrder(this)); // without FK null
+        items.forEach(i -> i.setOrder(this)); // without FK null
+        recalculateTotal();
     }
 
     public void addItem(OrderItem item){
         this.items.add(item);
         item.setOrder(this);
+    }
+
+    @PrePersist
+    public void createdAt(){
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = this.createdAt;
+    }
+
+    @PreUpdate
+    public void update(){
+        this.updatedAt = LocalDateTime.now();
     }
 
 }

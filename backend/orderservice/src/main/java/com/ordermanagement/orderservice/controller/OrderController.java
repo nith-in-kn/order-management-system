@@ -2,7 +2,6 @@ package com.ordermanagement.orderservice.controller;
 
 import com.ordermanagement.orderservice.entity.Order;
 import com.ordermanagement.orderservice.service.OrderService;
-import com.ordermanagement.orderservice.service.impl.OrderServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +51,7 @@ public class OrderController {
             Exception exception,
             HttpServletRequest request
     ){
-        log.error("Exception occurred for uri: {} | Message: {}", request.getRequestURL(), exception.getMessage(), exception);
+        log.error("Exception occurred for uri: {} | Message: {} ", request.getRequestURL(), exception.getMessage(), exception);
         return ResponseEntity.internalServerError().build();
     }
 }

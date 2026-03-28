@@ -1,5 +1,6 @@
 package com.ordermanagement.orderservice.service.impl;
 
+import com.ordermanagement.orderservice.dto.OrderEvent;
 import com.ordermanagement.orderservice.entity.Order;
 import com.ordermanagement.orderservice.repository.OrderRepository;
 import com.ordermanagement.orderservice.service.OrderService;
@@ -10,13 +11,14 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service @AllArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private OrderRepository orderRepository;
-    private KafkaTemplate<String, Order> kafkaTemplate;
+    private KafkaTemplate<String, OrderEvent> kafkaTemplate;
 
     @Transactional
     public Order saveOrder(Order order){
@@ -24,13 +26,35 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
+        // Create order event DTO for Kafka
+        OrderEvent orderEvent = new OrderEvent();
+        orderEvent.setId(savedOrder.getId());
+        orderEvent.setCustomerId(savedOrder.getCustomerId());
+        orderEvent.setPaymentId(savedOrder.getPaymentId());
+        orderEvent.setOrderDate(savedOrder.getCreatedAt());
+        orderEvent.setTotalAmount(savedOrder.getTotalAmount());
+        orderEvent.setItems(savedOrder.getItems().stream()
+                .map(item -> {
+                    OrderEvent.OrderItemEvent itemEvent = new OrderEvent.OrderItemEvent();
+                    itemEvent.setProductId(item.getProductId());
+                    itemEvent.setName(item.getName());
+                    itemEvent.setUnitPrice(item.getUnitPrice());
+                    itemEvent.setQuantity(item.getQuantity());
+                    itemEvent.setSubTotal(item.getSubTotal());
+                    return itemEvent;
+                })
+                .collect(Collectors.toList()));
+
         kafkaTemplate
-                .send("orders", String.valueOf(savedOrder.getId()), savedOrder)
+                .send("orders", String.valueOf(savedOrder.getId()), orderEvent)
                 .whenComplete((result, ex) -> {
                     if (ex != null) {
                         log.error("Failed to publish order to Kafka: ", ex);
                     } else {
-                        log.debug("Successfully published order to Kafka topic, order id: {}", savedOrder.getId());
+                        log.debug("Order published to Kafka! Topic: {}, Partition: {}, Offset: {}",
+                                result.getRecordMetadata().topic(),
+                                result.getRecordMetadata().partition(),
+                                result.getRecordMetadata().offset());
                     }
                 });
 
