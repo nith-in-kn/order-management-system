@@ -1,0 +1,67 @@
+name: Backend Render CI/CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/orderservice/**'
+      - 'backend/productservice/**'
+      - 'backend/userservice/**'
+      - '.github/workflows/backend-render-cicd.yml'
+      - 'render.yaml'
+  pull_request:
+    paths:
+      - 'backend/orderservice/**'
+      - 'backend/productservice/**'
+      - 'backend/userservice/**'
+      - '.github/workflows/backend-render-cicd.yml'
+      - 'render.yaml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - orderservice
+          - productservice
+          - userservice
+    defaults:
+      run:
+        working-directory: backend/${{ matrix.service }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Run tests
+        run: chmod +x mvnw && ./mvnw test
+
+  deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy for orderservice
+        run: curl -fsSL -X POST "$RENDER_ORDERSERVICE_DEPLOY_HOOK_URL"
+        env:
+          RENDER_ORDERSERVICE_DEPLOY_HOOK_URL: ${{ secrets.RENDER_ORDERSERVICE_DEPLOY_HOOK_URL }}
+
+      - name: Trigger Render deploy for productservice
+        run: curl -fsSL -X POST "$RENDER_PRODUCTSERVICE_DEPLOY_HOOK_URL"
+        env:
+          RENDER_PRODUCTSERVICE_DEPLOY_HOOK_URL: ${{ secrets.RENDER_PRODUCTSERVICE_DEPLOY_HOOK_URL }}
+
+      - name: Trigger Render deploy for userservice
+        run: curl -fsSL -X POST "$RENDER_USERSERVICE_DEPLOY_HOOK_URL"
+        env:
+          RENDER_USERSERVICE_DEPLOY_HOOK_URL: ${{ secrets.RENDER_USERSERVICE_DEPLOY_HOOK_URL }}

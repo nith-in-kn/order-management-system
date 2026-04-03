@@ -1,0 +1,67 @@
+services:
+  - type: web
+    name: orderservice
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./backend/orderservice/Dockerfile
+    dockerContext: ./backend/orderservice
+    autoDeployTrigger: off
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: SPRING_PROFILES_ACTIVE
+        value: deploy
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: SPRING_KAFKA_BOOTSTRAP_SERVERS
+        sync: false
+
+  - type: web
+    name: productservice
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./backend/productservice/Dockerfile
+    dockerContext: ./backend/productservice
+    autoDeployTrigger: off
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: PORT
+        value: 8081
+      - key: SPRING_PROFILES_ACTIVE
+        value: deploy
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: SPRING_KAFKA_BOOTSTRAP_SERVERS
+        sync: false
+
+  - type: web
+    name: userservice
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./backend/userservice/Dockerfile
+    dockerContext: ./backend/userservice
+    autoDeployTrigger: off
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: PORT
+        value: 8082
+      - key: SPRING_PROFILES_ACTIVE
+        value: deploy
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
